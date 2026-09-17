@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Where is the sector today? — 9R circularity strategies in space</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --ink: #16202b;
+    --paper: #ffffff;
+    --tint: #faf8f3;
+    --line: #ddd6c7;
+    --muted: #6a5c48;
+    --rust: #b4532a;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+  body {
+    font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .lead { margin: 0; font-size: 16px; color: var(--muted); }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .pill {
+    font: inherit;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    gap: 1px;
+    min-height: 58px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: #2b2721;
+    cursor: pointer;
+    transition: background 120ms ease, border-color 120ms ease;
+  }
+  .pill:hover { border-color: var(--ink); }
+  .pill:focus-visible { outline: 3px solid var(--rust); outline-offset: 2px; }
+  .pill[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #f4f1ea; }
+  .pill .code { font-family: Spectral, Georgia, serif; font-size: 14px; font-weight: 700; opacity: 0.7; }
+  .pill .name { font-size: 18px; font-weight: 600; }
+  .detail {
+    flex: 1 1 auto;
+    min-height: 210px;
+    background: var(--tint);
+    border: 1px solid #e4dccd;
+    border-radius: 9px;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .detail-head { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+  .detail-title { font-family: Spectral, Georgia, serif; font-size: 28px; font-weight: 700; }
+  .badge {
+    flex-shrink: 0;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    padding: 5px 13px;
+    border-radius: 999px;
+    color: #ffffff;
+    white-space: nowrap;
+  }
+  .theme { font-size: 13px; color: var(--muted); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+  .detail p { margin: 0; font-size: 17px; line-height: 1.48; color: #2b2721; }
+  @media (max-width: 560px) {
+    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .detail-title { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+  <p class="lead">Select a strategy for its maturity and the evidence of adoption in the space sector.</p>
+  <div class="grid" id="grid" role="group" aria-label="The nine circularity strategies"></div>
+  <div class="detail" aria-live="polite">
+    <div class="detail-head">
+      <div class="detail-title" id="d-title"></div>
+      <div class="badge" id="d-badge"></div>
+    </div>
+    <div class="theme" id="d-theme"></div>
+    <p id="d-detail"></p>
+  </div>
+
+<script>
+(function () {
+  var COLOR = {
+    'Operational': '#2e6e63',
+    'Demonstration': '#b4532a',
+    'Studied only': '#7a5c2e',
+    'None': '#55607a'
+  };
+
+  var DATA = [
+    { code: 'R0', name: 'Refuse', maturity: 'None', theme: 'Intelligent use of resources',
+      detail: 'No examples identified. Commercial Earth observation, reconnaissance and GNSS constellations have been and will continue to be duplicated, driven by commercial interests, military competition, and national or regional desires for autonomy.' },
+    { code: 'R1', name: 'Rethink', maturity: 'Operational', theme: 'Intelligent use of resources',
+      detail: 'Increasing servitization of space systems, particularly payload-as-a-service and hosted payloads, which reduce upfront expenditure and result in fewer, multifunctional satellites being launched.' },
+    { code: 'R2', name: 'Reduce', maturity: 'Operational', theme: 'Intelligent use of resources',
+      detail: 'Ecodesign for space, assessing and reducing the environmental impacts of space activities on Earth. ESA has been adapting Life Cycle Assessment methodologies for the space sector since 2009.' },
+    { code: 'R3', name: 'Reuse', maturity: 'Operational', theme: 'Longer life cycles',
+      detail: 'Partially reusable launchers: the first stages of Falcon 9 and Falcon Heavy are recovered and reused, drastically reducing the price per kilogram; Starship is designed to be fully reusable. Satellites have occasionally been reused, such as AMC-14.' },
+    { code: 'R4', name: 'Repair', maturity: 'Operational', theme: 'Longer life cycles',
+      detail: 'Ongoing maintenance and repair of the International Space Station since the first module was launched in 1988; Robotic Refueling Missions and Dextre; GEO life extension missions; the cancelled OSAM-1; and the RSat CubeSat.' },
+    { code: 'R5', name: 'Refurbish', maturity: 'Operational', theme: 'Longer life cycles',
+      detail: 'The five servicing missions to the Hubble Space Telescope flown in 1993, 1997, 1999, 2002 and 2009, which installed adaptive optics and steadily upgraded instruments, avionics and solar panels over 16 years.' },
+    { code: 'R6', name: 'Remanufacture', maturity: 'Studied only', theme: 'Longer life cycles',
+      detail: 'No examples of remanufacture in orbit were identified. The DARPA Phoenix Program studied the possibility of harvesting and reusing satellite components from retired satellites in GEO.' },
+    { code: 'R7', name: 'Repurpose', maturity: 'Studied only', theme: 'Longer life cycles',
+      detail: 'Few examples of systems being repurposed in orbit; also studied through the DARPA Phoenix Program. Space hardware still on Earth has been repurposed, such as the 2012 donation of two declassified space telescopes to NASA.' },
+    { code: 'R8', name: 'Recycle', maturity: 'Demonstration', theme: 'Recycling',
+      detail: 'Plastic recycling on the ISS, notably the ReFabricator, which combines a 3D printer with a recycling system; the ISS Environmental Control and Life Support System, which recycles 95 per cent of the crew\u2019s urine. Recycling space debris remains conceptual.' }
+  ];
+
+  var grid = document.getElementById('grid');
+  var dTitle = document.getElementById('d-title');
+  var dBadge = document.getElementById('d-badge');
+  var dTheme = document.getElementById('d-theme');
+  var dDetail = document.getElementById('d-detail');
+  var buttons = [];
+  var picked = 'R5';
+
+  function show(code) {
+    picked = code;
+    var s = DATA.filter(function (x) { return x.code === code; })[0];
+    dTitle.textContent = s.code + ' \u00b7 ' + s.name;
+    dBadge.textContent = s.maturity;
+    dBadge.style.background = COLOR[s.maturity] || '#55607a';
+    dTheme.textContent = s.theme;
+    dDetail.textContent = s.detail;
+    buttons.forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b.dataset.code === code));
+    });
+  }
+
+  DATA.forEach(function (s) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'pill';
+    b.dataset.code = s.code;
+    b.setAttribute('aria-pressed', 'false');
+    var c = document.createElement('span');
+    c.className = 'code';
+    c.textContent = s.code;
+    var n = document.createElement('span');
+    n.className = 'name';
+    n.textContent = s.name;
+    b.appendChild(c);
+    b.appendChild(n);
+    b.addEventListener('click', function () { show(s.code); });
+    grid.appendChild(b);
+    buttons.push(b);
+  });
+
+  show(picked);
+})();
+</script>
+</body>
+</html>
